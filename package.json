@@ -1,0 +1,36 @@
+{
+  "name": "nodeapitemplate",
+  "version": "1.0.0",
+  "description": "Quickstart for Node API with User Auth",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syntakks/NodeApiTemplate.git"
+  },
+  "keywords": [
+    "node",
+    "node.js",
+    "api",
+    "auth",
+    "authentication"
+  ],
+  "author": "Stephen Wall",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/syntakks/NodeApiTemplate/issues"
+  },
+  "homepage": "https://github.com/syntakks/NodeApiTemplate#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.0",
+    "bcrypt": "^4.0.0",
+    "config": "^3.3.0",
+    "express": "^4.17.1",
+    "helmet": "^3.21.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.9.2"
+  }
+}
