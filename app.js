@@ -1,10 +1,12 @@
 const config = require('config')
-const helmet = require('helmet')
 const startupDebugger = require('debug')('app:start') //export DEBUG=<namespace> comma separated, * for all, empty for none.
 const dbDebugger = require('debug')('app:db')
+const helmet = require('helmet')
+const error = require('./middleware/error')
 // Routes
-const users = require('./routes/users')
 const auth = require('./routes/auth')
+const users = require('./routes/users')
+const notes = require('./routes/notes')
 // Express
 const express = require('express')
 const app = express()
@@ -17,8 +19,11 @@ app.use(express.static('public')) // Static assets in this folder, localhost:por
 // HTTP Header Security
 app.use(helmet()) 
 // Use routes 
-app.use('/api/users/', users)
 app.use('/api/auth/', auth)
+app.use('/api/users/', users)
+app.use('/api/notes/', notes)
+// Errors Middleware
+app.use(error)
 
 checkConfigSetup()
 
