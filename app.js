@@ -1,41 +1,26 @@
-const config = require('config')
+// Log exceptions and rejections in file / db/ and console.
+process.on('uncaughtException', (ex) => {
+    console.log('WE GOT AN UNCAUGHT EXCEPTION', ex.message)
+    process.exit(1)
+})
+
+process.on('unhandledRejection', (ex) => {
+  console.log('WE GOT AN UNHANDLED REJECTION', ex.message)
+  process.exit(1)
+})
+// Logging
 const startupDebugger = require('debug')('app:start') //export DEBUG=<namespace> comma separated, * for all, empty for none.
-const dbDebugger = require('debug')('app:db')
-const helmet = require('helmet')
-const error = require('./middleware/error')
-// Routes
-const auth = require('./routes/auth')
-const users = require('./routes/users')
-const notes = require('./routes/notes')
+
+// Config
+require('./startup/config')()
+
 // Express
 const express = require('express')
 const app = express()
-// Mongoose
-const mongoose = require('mongoose')
-// Allows for json parsing in the request body. Middleware
-app.use(express.json())
-app.use(express.urlencoded({ extended: true })) // converts urlencoded to json in req.body
-app.use(express.static('public')) // Static assets in this folder, localhost:port/<filename>
-// HTTP Header Security
-app.use(helmet()) 
-// Use routes 
-app.use('/api/auth/', auth)
-app.use('/api/users/', users)
-app.use('/api/notes/', notes)
-// Errors Middleware
-app.use(error)
+require('./startup/routes')(app) // Adds routes and some middleware. 
 
-checkConfigSetup()
-
-// Database
-mongoose.connect(`mongodb://localhost/${config.get('db_name')}`, {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-  useUnifiedTopology: true
-})
-  .then(() => dbDebugger("Connected to MongoDB..."))
-  .catch(() => dbDebugger("Could not connect to MongoDB..."));
+//DB
+require('./startup/db')()
 
 // Define the port with environment variables: export PORT=<your port number>
 const port = process.env.PORT || 3000
@@ -43,17 +28,4 @@ app.listen(port, () => {
     startupDebugger(`Listening on port ${port}`)
 })
 
-function checkConfigSetup() {
-    // jwtPrivateKey: export db_name=<your db name here>
-    startupDebugger(`db_name: ${config.get('db_name')}`)
-    if (!config.get('db_name')) {
-        console.log('FATAL ERROR: db_name not defined... Exiting...')
-        process.exit(1)
-    }
-    // jwtPrivateKey: export <app name>_jwtPrivateKey=<your key here>
-    startupDebugger(`jwtPrivateKey: ${config.get('jwtPrivateKey')}`)
-    if (!config.get('jwtPrivateKey')) {
-    console.log('FATAL ERROR: jwtPrivateKey is not defined... Exiting...')
-    process.exit(1)
-    }
-}
+
